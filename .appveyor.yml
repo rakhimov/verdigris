@@ -1,0 +1,16 @@
+platform:
+    - x64
+
+configuration:
+    - Release
+
+install:
+    - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;%PATH%
+    - pacman --noconfirm -Syu
+    - pacman --noconfirm -S mingw-w64-x86_64-qt5
+
+before_build:
+    - qmake -r
+
+build_script:
+    - make -j 2
