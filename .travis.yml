@@ -3,7 +3,22 @@ dist: trusty
 
 language: cpp
 
+compiler: gcc
+
+env:
+    global:
+        - secure: "yh8QSkvdO3pg4lhQSlkBDlj09X7YARUqelGydKX5+xiJOsKXgpZP4GvBdhtBuqkXLtSl6+9mFL2Xstt4IUu2Frhyi3bZNTZIIIW8oy/vlHhui57dwf/GrISYJaofeUbWbQvaITQwFfdmJZe1KE5ar7/fQNuYXxOxec5+PuV9PlTPT3Q8mBY/T+egix6Riv+uoHfdyDM0MWIOnE85Am3G56W2Vdgkpau5BMBC1wLhXkUNoaKr6Hfi5SbGXEQj41/5G7+uvHM4uhIYx/ZzhA0kdyZKQL/kdPHShhqsNRYusQ0oSBgekAgeJ95gFQl05NXxFCZUgJIZp78uMmEDkkK+yr3I9yg0qkuKBRCDuroFccUHqtPZQ9H4jTJ6M/nEfJCbYy769i65oJbHZl5IrDmoIBu2NvokYJ+TjrDSPnFMlseGyWMiRze9udv3stzaedTwEM4vaCpTnNHFInMhUvae3FE6La1EY0MoUWm0gX2vrwosDm3dTrRakrRBYFJ7X3J7h1aswGvOP44WGGnSsMfmhTTem9c9DnZZHjvacemcUboEHXchiTwpRD3CEMQX2Ea+sLl5GlmuGv5dggcG20zjS8cgDFIpYOqBP7AJwX05w6ZMRn4AltTbKjhSuN2oXTAEdydhzY0pNB5ZgI5drUV2Kn0TbkK7qti5eZP5JYirBLE="
+        - QT_VERSION=58 QT_SOURCE=58 GCC_VERSION=6
+
 addons:
+    coverity_scan:
+        project:
+            name: "rakhimov/verdigris"
+            # description: "Build submitted via Travis CI"
+        notification_email: ol.rakhimov@gmail.com
+        build_command_prepend: qmake
+        build_command: make -j 2
+        branch_pattern: "coverity_scan"
     apt:
         sources:
             - ubuntu-toolchain-r-test
@@ -11,33 +26,6 @@ addons:
             - llvm-toolchain-trusty-3.9
             - llvm-toolchain-trusty-4.0
             - llvm-toolchain-trusty-5.0
-
-os: linux
-
-matrix:
-    exclude:
-        - os: linux  # Workaround to put OS X first.
-    include:
-        - os: osx
-          compiler: clang
-          env: QMAKESPEC=macx-clang
-          before_install: true
-          install: brew install qt5
-          before_script: brew link qt5 --force
-
-        # We enumerate the matrix explicitly anyway, so order it after osx.
-        - env: QT_VERSION=55 QT_SOURCE=551 GCC_VERSION=5
-        - env: QT_VERSION=56 QT_SOURCE=563 GCC_VERSION=6
-        - env: QT_VERSION=58 QT_SOURCE=58 GCC_VERSION=6
-        - env: QT_VERSION=59 QT_SOURCE=593 GCC_VERSION=7 CXXFLAGS=-Wno-noexcept-type
-        - env: QT_VERSION=510 QT_SOURCE=5.10.0 GCC_VERSION=7 CXXFLAGS=-Wno-noexcept-type
-
-        # Clang builds.
-        - env: QT_VERSION=56 QT_SOURCE=563 CLANG_VERSION=3.8
-        - env: QT_VERSION=57 QT_SOURCE=571 CLANG_VERSION=3.9
-        - env: QT_VERSION=58 QT_SOURCE=58 CLANG_VERSION=4.0
-        - env: QT_VERSION=59 QT_SOURCE=591 CLANG_VERSION=5.0
-        - env: QT_VERSION=510 QT_SOURCE=5.10.0 CLANG_VERSION=5.0
 
 before_install:
     - if [[ ${QT_VERSION} == "510" ]]; then
@@ -63,9 +51,4 @@ install:
 before_script:
     - source /opt/qt$QT_VERSION/bin/qt${QT_VERSION}-env.sh
 
-script:
-    - which qmake
-    - qmake --version
-    - qmake -r QMAKE_CXXFLAGS+=$CXXFLAGS
-    - make -j 2
-    - make check
+script: true
